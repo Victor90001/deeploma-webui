@@ -1,0 +1,72 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    ViewData["Title"] = "| Detection";
+}
+@section Scripts{
+    <script src="~/js/detection.js" type="text/javascript"></script>
+}
+<link rel="stylesheet" href="/css/detection.css" />
+<style>
+    .padrow {
+        padding: 64px;
+    }
+</style>
+<div class="container my-5 p-5">
+    <h2 class="my-5">Распознавание дорожных знаков</h2>
+    <div class="row h-100 mx-auto my-5 p-5" style="max-width:960px">
+        <p>Для распознавания дорожных знаков загрузите изображение, настройте параметры распознавания и нажмите отправить.</p>
+        <p>
+            Параметры:<br>
+            <b>Разрешение</b> - определяет размер изображения для вывода. Правильный размер может повысить точность обнаружения и скорость обработки<br>
+            <b>Порог вероятности распознавания (Confidence thresold)</b> - устанавливает минимальный порог вероятности обнаружения. Объекты, обнаруженные с достоверностью ниже этого порога, не будут учитываться. Изменение этого значения может помочь уменьшить количество ложных срабатываний.<br>
+            <b>Порог IoU</b> - Порог пересечения с объединением (IoU) для немаксимального подавления (NMS). Более низкие значения приводят к меньшему количеству обнаружений за счет устранения перекрывающихся полей, что полезно для уменьшения количества дубликатов.
+        </p>
+    </div>
+</div>
+<div style="border-bottom: solid 3px;"></div>
+<div class="container my-5 p-5" style="max-width:800px">
+    @* @using (Html.BeginForm("detection", "Main", FormMethod.Post, new { enctype="multipart/form-data", id="detectForm"})){ *@
+    <form id="detectForm">
+        @Html.AntiForgeryToken()
+        <div class="row mx-auto my-2">
+            <select name="model">
+                <option value="0" selected>YOLOv5</option>
+                <option value="1">YOLOv8 from cloud service UltralyticsHub</option>
+            </select>
+        </div>
+        <div class="row mx-auto my-5">
+            <input type="file" name="uploadImage" id="uploadFile" accept="image/*">
+            <div>
+                <img id="inpImg" src="#" alt="" style="position:absolute; max-width:720px"/>
+                <canvas id="inpCanvas" style="position: relative; z-index:10; max-width: 720px"></canvas>
+            </div>
+        </div>
+        <div id="loading"></div>
+        <div class="row padrow">
+            <div class="col border border-black mx-2" style="border-radius: 5px">
+                <p style="border-bottom: solid;">Разрешение</p>
+                <input type="range" name="width" id="width_input" min="120" max="2560" step="20" value="640">
+                <p id="width_value"></p>
+                <input type="range" name="height" id="height_input" min="120" max="2560" step="20" value="640">
+                <p id="height_value"></p>
+            </div>
+            <div class="col border border-black mx-2" style="border-radius: 5px">
+                <p style="border-bottom: solid;">Порог вероятности распознавания</p>
+                <input type="range" name="conf" id="conf" min="0.01" max="1" step="0.01">
+                <p id="conf_value"></p>
+            </div>
+            <div class="col border border-black mx-2" style="border-radius: 5px">
+                <p style="border-bottom: solid;">IoU порог</p>
+                <input type="range" name="iou" id="iou" min="0" max="0.95" step="0.01">
+                <p id="iou_value"></p>
+            </div>
+        </div>
+        <div class="row justify-content-end">
+            <div class="col-4">
+                <input id="detectSubmit" type="submit" value="Отправить">
+            </div>
+        </div>
+    </form>
+</div>
